@@ -22,21 +22,33 @@ awk -F ',' '{if ($8 < 1000000) print $0 ",Bo";
 
 #Activitat 4
 
-{
-while [[cut -d ',' read -r '$8 $9 $10' ]]
-    if [ '$8' != 0 ]; then
-        Rlikes='($9*100)/$8 echo $16'
-        Rdislikes='($10*100)/$8 echo $17'
+while read -r linia; do
+    views=$(echo $linia | cut -d ',' -f 8)
+    likes=$(echo $linia | cut -d ',' -f 9)
+    dislikes=$(echo $linia | cut -d ',' -f 10)
+
+    if [ views != 0 ]; then
+        Rlikes=$(((likes*100)/views))
+        Rdislikes=$(((dislikes*100)/views))
     else
         Rlikes=0
         Rdislikes=0
     fi
-}views.csv > likes.csv
+    echo "$linia,$Rlikes,$Rdislikes" >> likes.csv
+done < views.csv
 
 #Activitat 5
+
+if [[ ! -f sortida.csv]]; then
+    echo "L'arxiu sortida.csv no existeix"
+    exit 1
+fi
+
 read -p "Introdueix el titol o l'identificador del video: " video
 
-if (grep -w video
-      echo '$3 $6 $8 $9 $10 $15 $16 $17'
+resultat=$(grep -i video sortida.csv)
+
+if [ -n "$resultat" ];then
+      echo '$3,$6,$8,$9,$10,$15,$16,$17' > final.csv
 else
-      echo "No s'han trobat coincidencies"
+      echo "No s'han trobat coincidències." > final.csv
